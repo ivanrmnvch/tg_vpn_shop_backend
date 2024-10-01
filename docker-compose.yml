@@ -1,0 +1,13 @@
+services:
+  postgresql:
+    image: postgres:latest
+    restart: always
+    volumes:
+      # windows
+      - C:/vpn/volumes:/var/lib/postgresql/data
+      # linux
+      #- /home/ivanrmnvch/Programm/data/postgresql:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file:
+      .env
