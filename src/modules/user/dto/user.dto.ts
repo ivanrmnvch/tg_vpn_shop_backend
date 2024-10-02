@@ -1,6 +1,6 @@
 export default class UserDto {
 	id: number;
-	first_name: string;
-	username: string;
+	firstName: string;
+	userName: string;
 	lang: string;
 }

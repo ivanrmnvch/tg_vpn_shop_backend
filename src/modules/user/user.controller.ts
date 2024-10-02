@@ -7,6 +7,11 @@ import UserDto from './dto/user.dto';
 export default class UserController {
 	constructor(private userService: UserService) {}
 
+	@Get('/meta')
+	async getUserMeta(@Query('id') id: number) {
+		return this.userService.getUserMeta(id);
+	}
+
 	@Post('/')
 	async addUser(@Body() body: UserDto) {
 		return this.userService.addUser(body);
