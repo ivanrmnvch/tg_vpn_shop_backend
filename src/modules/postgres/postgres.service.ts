@@ -20,8 +20,8 @@ import { ConfigService } from '@nestjs/config';
  * todo мультиконнект к нескольким базам
  */
 @Injectable()
-export default class PostgresService {
-	// implements OnModuleDestroy, OnModuleInit {
+export default class PostgresService implements OnModuleInit {
+	//OnModuleDestroy
 	private pool: Pool;
 
 	private intervalConnectCheck: NodeJS.Timer;
@@ -48,13 +48,14 @@ export default class PostgresService {
 	// /**
 	//  * Хук на инициализации модуля. Запускает проверку подключения к БД каждые 15с
 	//  */
-	// async onModuleInit() {
-	//   this.checkConnect(true)
-	//     .then(() => {
-	//       this.intervalConnectCheck = setInterval(this.checkConnect.bind(this), 15000);
-	//     })
-	//     .catch(() => null);
-	// }
+	async onModuleInit() {
+		await this.pool.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
+		// this.checkConnect(true)
+		//   .then(() => {
+		//     this.intervalConnectCheck = setInterval(this.checkConnect.bind(this), 15000);
+		//   })
+		//   .catch(() => null);
+	}
 
 	// /**
 	//  * Проверка работоспособности подключения к БД для health сервиса
