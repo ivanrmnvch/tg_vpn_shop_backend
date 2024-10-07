@@ -9,6 +9,7 @@ import PostgresModule from "./modules/postgres/postgres.module";
 import pgConfig from './config/pg.config';
 
 import UserModule from './modules/user/user.module';
+import TransactionModule from './modules/transaction/transaction.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import UserModule from './modules/user/user.module';
       PostgresModule.forRoot(pgConfig()),
 
       UserModule,
+      TransactionModule,
   ],
   providers: [AppService],
 })

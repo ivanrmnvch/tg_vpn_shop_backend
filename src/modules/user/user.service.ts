@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import PostgresService from '../postgres/postgres.service';
 
-import UserDto from './dto/user.dto';
+import UserDto from '../../common/dto/user.dto';
 
 @Injectable()
 export default class UserService {
@@ -13,7 +13,8 @@ export default class UserService {
 	async getUserMeta(id: number) {
 		const [meta] = await this.pgService.query(
 			`
-				SELECT trial FROM tg_users_meta WHERE id = $1::bigint;
+				SELECT NOT EXISTS(SELECT 1 FROM transaction WHERE id = $1::bigint) as "newUser";
+				-- SELECT trial FROM tg_users_meta WHERE id = $1::bigint;
 			`,
 			[id]
 		);
