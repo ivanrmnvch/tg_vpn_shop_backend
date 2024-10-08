@@ -4,24 +4,26 @@ import { join } from 'path';
 
 import { ConfigModule } from '@nestjs/config';
 
-import PostgresModule from "./modules/postgres/postgres.module";
+import PostgresModule from './modules/postgres/postgres.module';
 
 import pgConfig from './config/pg.config';
 
 import UserModule from './modules/user/user.module';
 import TransactionModule from './modules/transaction/transaction.module';
+import VpnServicesModule from './modules/vpn_services/vpn_services.module';
 
 @Module({
-  imports: [
-      ConfigModule.forRoot({
-          isGlobal: true,
-          envFilePath: join(__dirname, '../.env'),
-      }),
-      PostgresModule.forRoot(pgConfig()),
+	imports: [
+		ConfigModule.forRoot({
+			isGlobal: true,
+			envFilePath: join(__dirname, '../.env'),
+		}),
+		PostgresModule.forRoot(pgConfig()),
 
-      UserModule,
-      TransactionModule,
-  ],
-  providers: [AppService],
+		UserModule,
+		TransactionModule,
+		VpnServicesModule,
+	],
+	providers: [AppService],
 })
 export class AppModule {}

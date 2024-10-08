@@ -1,7 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import PostgresService from '../postgres/postgres.service';
 
-import UserDto from '../../common/dto/user.dto';
+import IServerData from './interfaces/IServerData';
+import IVPNClientId from './interfaces/IVPNClientId';
+
+import { getUrl } from './utils/getUrl';
+
+import { PassThrough } from 'stream';
+import * as QRCode from 'qrcode';
 
 @Injectable()
 export default class VpnServicesService {
@@ -10,35 +16,26 @@ export default class VpnServicesService {
 		private pgService: PostgresService
 	) {}
 
-	async getUserMeta(id: number) {
-		const [meta] = await this.pgService.query(
-			`
-				SELECT trial FROM tg_users_meta WHERE id = $1::bigint;
-			`,
+	async getQRKey(id: number, code: string) {
+		const [{ clientId }] = await this.pgService.query<IVPNClientId>(
+			'SELECT client_id as "clientId" FROM tg_users_meta WHERE id = $1::bigint;',
 			[id]
 		);
-		return meta;
-	}
 
-	// todo логирование
-	// todo валидация
-	async addUser(body: UserDto) {
-		const { id, firstName, userName, lang } = body;
-		await this.pgService.query(
-			`
-        INSERT INTO tg_users(id, first_name, username, lang)
-        VALUES ($1::bigint, $2::varchar, $3::varchar, $4::varchar)
-        ON CONFLICT DO NOTHING;
-      `,
-			[id, firstName, userName, lang]
-		);
-	}
+		const [{ ip, country, sni, pbk, sid }] =
+			await this.pgService.query<IServerData>(
+				`
+					SELECT ip, country, sni, pbk, sid
+					FROM servers WHERE code_name = $1::varchar;
+				`,
+				[code]
+			);
 
-	async checkUser(id: number): Promise<boolean> {
-		const [{ exists }] = await this.pgService.query<{ exists: boolean }>(
-			'SELECT EXISTS(SELECT 1 FROM tg_users WHERE id = $1::bigint);',
-			[id]
-		);
-		return exists;
+		const url = getUrl({ clientId, ip, sni, pbk, sid, country });
+		const readable = new PassThrough();
+
+		await QRCode.toFileStream(readable, url);
+
+		return new StreamableFile(readable);
 	}
 }

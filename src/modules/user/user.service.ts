@@ -13,8 +13,10 @@ export default class UserService {
 	async getUserMeta(id: number) {
 		const [meta] = await this.pgService.query(
 			`
-				SELECT NOT EXISTS(SELECT 1 FROM transaction WHERE id = $1::bigint) as "newUser";
-				-- SELECT trial FROM tg_users_meta WHERE id = $1::bigint;
+				SELECT (
+			 		NOT EXISTS(SELECT 1 FROM transaction WHERE tg_id = $1::bigint)
+				 		AND NOT (SELECT trial FROM tg_users_meta WHERE id = $1::bigint)
+			 	) "newUser";
 			`,
 			[id]
 		);
@@ -29,7 +31,11 @@ export default class UserService {
 			`
         INSERT INTO tg_users(id, first_name, username, lang)
         VALUES ($1::bigint, $2::varchar, $3::varchar, $4::varchar)
-        ON CONFLICT DO NOTHING;
+        ON CONFLICT (id) DO UPDATE SET
+					first_name = excluded.first_name,
+					username = excluded.username,
+        	lang = excluded.lang,
+        	updated_at = now();
       `,
 			[id, firstName, userName, lang]
 		);

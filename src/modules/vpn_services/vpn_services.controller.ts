@@ -1,14 +1,23 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Controller, Get, Query, Res, StreamableFile } from '@nestjs/common';
+import { Response } from 'express';
 import VpnServicesService from './vpn_services.service';
-
-import UserDto from '../../common/dto/user.dto';
 
 @Controller('vpn-services')
 export default class VpnServicesController {
-	constructor(private vpnServicesService: VpnServicesService ) {}
+	constructor(private vpnServicesService: VpnServicesService) {}
 
-	@Post('/')
-	async addUser(@Body() body: UserDto) {
-		return this.vpnServicesService.addUser(body);
+	@Get('/')
+	async getQRKey(
+		@Query('id') id: number,
+		@Query('code') code: string,
+		@Res({ passthrough: true }) res: Response
+	): Promise<StreamableFile> {
+		// todo вынести try catch в глобальный фильтр исключений
+		try {
+			res.setHeader('Content-Type', 'image/png');
+			return this.vpnServicesService.getQRKey(id, code);
+		} catch {
+			res.status(500).send('Failed to generate QR code');
+		}
 	}
 }

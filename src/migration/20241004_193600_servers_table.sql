@@ -3,6 +3,9 @@ create table public.servers
     ip         varchar(15)             not null
         constraint servers_pk
             primary key,
+    code_name varchar(5) not null
+        constraint servers_pk_4
+            unique,
     country    varchar                 not null,
     domain     varchar(2)              not null,
     sni varchar default 'www.microsoft.com' not null,
@@ -28,3 +31,5 @@ comment on column public.servers.sid is 'Короткий id';
 comment on constraint servers_pk_3 on public.servers is 'Короткий id';
 comment on column public.servers.created_at is 'Дата создания';
 comment on column public.servers.updated_at is 'Дата обновления';
+comment on column public.servers.code_name is 'Кодовое название сервера';
+comment on constraint servers_pk_4 on public.servers is 'Кодовое название сервера';
