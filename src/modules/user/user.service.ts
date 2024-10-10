@@ -48,4 +48,17 @@ export default class UserService {
 		);
 		return exists;
 	}
+
+	async getTrial(id: number) {
+		await this.pgService.query(
+			`
+				UPDATE tg_users_meta SET 
+					trial = true,
+					trial_start_date = now(),
+					trial_end_date = now() + interval '10' day
+				WHERE id = $1::bigint;
+			`,
+			[id]
+		);
+	}
 }

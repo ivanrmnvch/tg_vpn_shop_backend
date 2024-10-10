@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import UserService from './user.service';
 
 import UserDto from '../../common/dto/user.dto';
@@ -7,8 +7,8 @@ import UserDto from '../../common/dto/user.dto';
 export default class UserController {
 	constructor(private userService: UserService) {}
 
-	@Get('/meta')
-	async getUserMeta(@Query('id') id: number) {
+	@Get('/:id/meta')
+	async getUserMeta(@Param('id') id: number) {
 		return this.userService.getUserMeta(id);
 	}
 
@@ -17,8 +17,13 @@ export default class UserController {
 		return this.userService.addUser(body);
 	}
 
-	@Post('/check')
-	async checkUser(@Query('id') id: number): Promise<boolean> {
+	@Post('/:id/check')
+	async checkUser(@Param('id') id: number): Promise<boolean> {
 		return this.userService.checkUser(id);
+	}
+
+	@Post('/:id/trial')
+	async getTrial(@Param('id') id: number) {
+		return this.userService.getTrial(id);
 	}
 }
