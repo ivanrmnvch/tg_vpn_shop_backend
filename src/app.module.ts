@@ -11,6 +11,7 @@ import pgConfig from './config/pg.config';
 import UserModule from './modules/user/user.module';
 import TransactionModule from './modules/transaction/transaction.module';
 import VpnServicesModule from './modules/vpn_services/vpn_services.module';
+import ServersModule from './modules/servers/servers.module';
 
 @Module({
 	imports: [
@@ -23,6 +24,7 @@ import VpnServicesModule from './modules/vpn_services/vpn_services.module';
 		UserModule,
 		TransactionModule,
 		VpnServicesModule,
+		ServersModule,
 	],
 	providers: [AppService],
 })
