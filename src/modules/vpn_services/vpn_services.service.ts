@@ -26,7 +26,7 @@ export default class VpnServicesService {
 			await this.pgService.query<IServerData>(
 				`
 					SELECT ip, country, sni, pbk, sid
-					FROM servers WHERE code_name = $1::varchar;
+					FROM servers WHERE name = $1::varchar;
 				`,
 				[code]
 			);

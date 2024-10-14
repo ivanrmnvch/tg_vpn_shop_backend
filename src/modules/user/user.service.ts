@@ -12,11 +12,24 @@ export default class UserService {
 
 	async getUserMeta(id: number) {
 		const [meta] = await this.pgService.query(
-			`
-				SELECT (
-			 		NOT EXISTS(SELECT 1 FROM transaction WHERE tg_id = $1::bigint)
-				 		AND NOT (SELECT trial FROM tg_users_meta WHERE id = $1::bigint)
-			 	) "newUser";
+			`			 	
+			 	SELECT
+					(
+						NOT EXISTS(SELECT 1 FROM transaction WHERE tg_id = $1::bigint)
+					 		AND NOT meta.trial
+					) "newUser",
+					(
+						(trial AND trial_end_date > now())
+							OR
+						(SELECT
+							CASE service_code
+							 	WHEN 'month' THEN created_at + interval '30' day
+							 	WHEN 'six_months' THEN created_at + interval '180' day
+							 	ELSE created_at + interval '365' day
+							END > now()
+						FROM transaction WHERE tg_id = $1::bigint ORDER BY created_at DESC LIMIT 1)
+					) as "activeTariff"
+				FROM (SELECT trial, trial_end_date FROM tg_users_meta WHERE id = $1::bigint) AS meta;
 			`,
 			[id]
 		);
