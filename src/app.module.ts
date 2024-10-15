@@ -9,7 +9,7 @@ import PostgresModule from './modules/postgres/postgres.module';
 import pgConfig from './config/pg.config';
 
 import UserModule from './modules/user/user.module';
-import TransactionModule from './modules/transaction/transaction.module';
+import PaymentsModule from './modules/payments/payments.module';
 import VpnServicesModule from './modules/vpn_services/vpn_services.module';
 import ServersModule from './modules/servers/servers.module';
 
@@ -22,7 +22,7 @@ import ServersModule from './modules/servers/servers.module';
 		PostgresModule.forRoot(pgConfig()),
 
 		UserModule,
-		TransactionModule,
+		PaymentsModule,
 		VpnServicesModule,
 		ServersModule,
 	],

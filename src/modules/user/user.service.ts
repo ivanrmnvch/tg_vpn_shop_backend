@@ -12,24 +12,26 @@ export default class UserService {
 
 	async getUserMeta(id: number) {
 		const [meta] = await this.pgService.query(
-			`			 	
-			 	SELECT
-					(
-						NOT EXISTS(SELECT 1 FROM transaction WHERE tg_id = $1::bigint)
-					 		AND NOT meta.trial
-					) "newUser",
-					(
-						(trial AND trial_end_date > now())
-							OR
-						(SELECT
-							CASE service_code
-							 	WHEN 'month' THEN created_at + interval '30' day
-							 	WHEN 'six_months' THEN created_at + interval '180' day
-							 	ELSE created_at + interval '365' day
-							END > now()
-						FROM transaction WHERE tg_id = $1::bigint ORDER BY created_at DESC LIMIT 1)
-					) as "activeTariff"
-				FROM (SELECT trial, trial_end_date FROM tg_users_meta WHERE id = $1::bigint) AS meta;
+			`
+				SELECT
+					(NOT meta.trial AND "order".end_date ISNULL) as "newUser",
+					(meta.trial AND meta.trial_end_date > now()) as "activeTrial",
+					meta.trial_start_date as "startTrial",
+					meta.trial_end_date as "expireTrial",
+					coalesce("order".end_date > now(), false) as "activeTariff",
+					"order".service_code as tariff,
+					"order".start_date as "startTariff",
+					"order".end_date as "expireTariff"
+				FROM (
+						SELECT trial, trial_start_date, trial_end_date
+						FROM tg_users_meta
+						WHERE id = $1::bigint
+					) as meta
+				LEFT JOIN (
+						SELECT service_code, start_date, end_date FROM orders
+						WHERE tg_id = $1::bigint
+						ORDER BY created_at DESC LIMIT 1
+					) as "order" ON TRUE;
 			`,
 			[id]
 		);
@@ -38,6 +40,7 @@ export default class UserService {
 
 	// todo логирование
 	// todo валидация
+	// todo проверить, что пользователь обновляется
 	async addUser(body: UserDto) {
 		const { id, firstName, userName, lang } = body;
 		await this.pgService.query(
