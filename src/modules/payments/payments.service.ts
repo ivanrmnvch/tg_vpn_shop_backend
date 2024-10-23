@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import OrdersService from '../orders/orders.service';
 import PostgresService from '../postgres/postgres.service';
 import KafkaService from '../kafka/kafka.service';
 
@@ -7,6 +8,7 @@ import PaymentsDto from './dto/payments.dto';
 @Injectable()
 export default class PaymentsService {
 	constructor(
+		private ordersService: OrdersService,
 		// private logger: CustomLogger,
 		private pgService: PostgresService,
 		private kafka: KafkaService
@@ -32,24 +34,11 @@ export default class PaymentsService {
 			[tgPayId, providePayId, tgId, totalAmount, date]
 		);
 
-		await this.pgService.query(
-			`
-				INSERT INTO orders(
-					tg_id,
-					service_code,
-					payment_id,
-					end_date
-				)
-				VALUES ($1::bigint, $2::varchar, $3::uuid,
-					CASE $2::varchar
-						WHEN 'month' THEN now() + interval '30' day
-						WHEN 'six_months' THEN now() + interval '180' day
-						ELSE now() + interval '365' day
-					END
-			 	);
-			`,
-			[tgId, serviceCode, providePayId]
-		);
+		await this.ordersService.createOrder({
+			tgId,
+			serviceCode,
+			providePayId,
+		});
 
 		const [{ clientId }] = await this.pgService.query<{ clientId: string }>(
 			'SELECT client_id as "clientId" FROM tg_users_meta WHERE id = $1::bigint;',
