@@ -16,11 +16,16 @@ export default class VpnServicesService {
 		private pgService: PostgresService
 	) {}
 
-	async getQRKey(id: number, code: string) {
+	async getVPNClientId(tgId: number) {
 		const [{ clientId }] = await this.pgService.query<IVPNClientId>(
 			'SELECT client_id as "clientId" FROM tg_users_meta WHERE id = $1::bigint;',
-			[id]
+			[tgId]
 		);
+		return clientId;
+	}
+
+	async getQRKey(id: number, code: string) {
+		const clientId = await this.getVPNClientId(id);
 
 		const [{ ip, country, sni, pbk, sid }] =
 			await this.pgService.query<IServerData>(

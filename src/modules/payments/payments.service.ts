@@ -2,16 +2,18 @@ import { Injectable } from '@nestjs/common';
 import OrdersService from '../orders/orders.service';
 import PostgresService from '../postgres/postgres.service';
 import KafkaService from '../kafka/kafka.service';
+import VpnServicesService from '../vpn_services/vpn_services.service';
 
 import PaymentsDto from './dto/payments.dto';
 
 @Injectable()
 export default class PaymentsService {
 	constructor(
-		private ordersService: OrdersService,
 		// private logger: CustomLogger,
 		private pgService: PostgresService,
-		private kafka: KafkaService
+		private kafka: KafkaService,
+		private ordersService: OrdersService,
+		private vpnServicesService: VpnServicesService
 	) {}
 
 	// todo логирование
@@ -40,12 +42,8 @@ export default class PaymentsService {
 			providePayId,
 		});
 
-		const [{ clientId }] = await this.pgService.query<{ clientId: string }>(
-			'SELECT client_id as "clientId" FROM tg_users_meta WHERE id = $1::bigint;',
-			[tgId]
-		);
+		const vpnClientId = await this.vpnServicesService.getVPNClientId(tgId);
 
-		const kafkaRes = await this.kafka.sendMessage('vpn-events-test123', clientId);
-		console.log('kafkaRes', kafkaRes);
+		await this.kafka.addNewVPNClient({ tgId, vpnClientId });
 	}
 }
