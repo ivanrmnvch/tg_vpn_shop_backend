@@ -3,7 +3,7 @@
 #WORKDIR /app
 #CMD npm run server:docker
 
-FROM node:16
+FROM node:18
 # Установите рабочую директорию
 WORKDIR /src
 

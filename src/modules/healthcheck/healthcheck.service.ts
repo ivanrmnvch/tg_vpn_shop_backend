@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import PostgresService from '../postgres/postgres.service';
+import PostgresService from 'modules/postgres/postgres.service';
 
 @Injectable()
 export default class HealthcheckService {

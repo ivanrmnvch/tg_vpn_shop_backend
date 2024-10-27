@@ -1,14 +1,12 @@
-version: '2'
-
 services:
   postgresql:
     image: postgres:latest
     restart: always
     volumes:
       # windows
-      - C:/vpn/volumes:/var/lib/postgresql/data
+      # - C:/vpn/volumes:/var/lib/postgresql/data
       # linux
-      #- /home/ivanrmnvch/Programm/data/postgresql:/var/lib/postgresql/data
+      - /home/roanokay/Programm/data/postgresql:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     env_file:
@@ -74,14 +72,18 @@ services:
         condition: service_healthy
     ports:
       - "127.0.0.1:8082:8082"
-    volumes:
-      - ./src:/app
-      - /usr/src/app/node_modules
     env_file:
       - .env
     command: npm run dev
     expose:
       - "8082"
+    develop:
+      watch:
+        - path: package.json
+          action: rebuild
+        - path: src
+          target: /src
+          action: sync
 
 volumes:
   kafka_data:

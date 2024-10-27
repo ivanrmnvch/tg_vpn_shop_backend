@@ -10,4 +10,8 @@ async function bootstrap() {
 	app.setGlobalPrefix('api');
 	await app.listen(+process.env.TVS_B_PORT || 8082);
 }
+
+console.log('112');
+console.log('23424');
+
 bootstrap();
