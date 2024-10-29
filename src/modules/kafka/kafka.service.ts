@@ -44,7 +44,7 @@ export default class KafkaService implements OnModuleDestroy {
 	}
 
 	async addNewVPNClient(message: NewVPNClientDto) {
-		return this.sendMessage('vpn-events-test12', JSON.stringify(message));
+		return this.sendMessage('new-vpn-clients', JSON.stringify(message));
 	}
 
 	async onModuleDestroy() {
