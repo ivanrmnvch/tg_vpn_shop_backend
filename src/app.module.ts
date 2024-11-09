@@ -9,10 +9,8 @@ import PostgresModule from './modules/postgres/postgres.module';
 import pgConfig from './config/pg.config';
 
 import UserModule from './modules/user/user.module';
-import PaymentsModule from './modules/payments/payments.module';
-import VpnServicesModule from './modules/vpn_services/vpn_services.module';
+import QrCodeModule from './modules/qrCode/qrCode.module';
 import ServersModule from './modules/servers/servers.module';
-import HealthcheckModule from './modules/healthcheck/healthcheck.module';
 
 @Module({
 	imports: [
@@ -23,10 +21,8 @@ import HealthcheckModule from './modules/healthcheck/healthcheck.module';
 		PostgresModule.forRoot(pgConfig()),
 
 		UserModule,
-		PaymentsModule,
-		VpnServicesModule,
+		QrCodeModule,
 		ServersModule,
-		HealthcheckModule,
 	],
 	providers: [AppService],
 })

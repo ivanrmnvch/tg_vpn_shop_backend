@@ -1,10 +1,10 @@
 import { Controller, Get, Query, Res, StreamableFile } from '@nestjs/common';
 import { Response } from 'express';
-import VpnServicesService from './vpn_services.service';
+import QrCodeService from './qrCode.service';
 
 @Controller('vpn-services')
-export default class VpnServicesController {
-	constructor(private vpnServicesService: VpnServicesService) {}
+export default class QrCodeController {
+	constructor(private qrCodeService: QrCodeService) {}
 
 	@Get('/')
 	async getQRKey(
@@ -15,7 +15,7 @@ export default class VpnServicesController {
 		// todo вынести try catch в глобальный фильтр исключений
 		try {
 			res.setHeader('Content-Type', 'image/png');
-			return this.vpnServicesService.getQRKey(id, code);
+			return this.qrCodeService.getQRKey(id, code);
 		} catch {
 			res.status(500).send('Failed to generate QR code');
 		}

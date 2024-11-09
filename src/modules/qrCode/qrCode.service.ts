@@ -10,7 +10,7 @@ import { PassThrough } from 'stream';
 import * as QRCode from 'qrcode';
 
 @Injectable()
-export default class VpnServicesService {
+export default class QrCodeService {
 	constructor(
 		// private logger: CustomLogger,
 		private pgService: PostgresService

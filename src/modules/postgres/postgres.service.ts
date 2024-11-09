@@ -50,6 +50,7 @@ export default class PostgresService implements OnModuleInit {
 	//  * Хук на инициализации модуля. Запускает проверку подключения к БД каждые 15с
 	//  */
 	async onModuleInit() {
+		// todo вынести в docker compose
 		await this.pool.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
 		// this.checkConnect(true)
 		//   .then(() => {

@@ -7,7 +7,6 @@ create table public.servers
         constraint servers_pk_4
             unique,
     country    varchar                 not null,
---     country_latin varchar              not null,
     country_code     varchar(2)              not null,
     sni varchar default 'www.microsoft.com' not null,
     pbk        varchar(43)             not null
@@ -24,7 +23,6 @@ comment on table public.servers is 'Данные vpn серверов';
 comment on column public.servers.ip is 'IP адрес сервера';
 comment on constraint servers_pk on public.servers is 'IP адрес сервера';
 comment on column public.servers.country is 'Название страны';
--- comment on column public.servers.country_latin is 'Название страны en';
 comment on column public.servers.country_code is 'Домен страны';
 comment on column public.servers.sni is 'Server Name Indication';
 comment on column public.servers.pbk is 'Публичный ключ';
